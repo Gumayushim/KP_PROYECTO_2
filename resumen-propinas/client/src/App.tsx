@@ -107,6 +107,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     catch (e) { setError((e as Error).message) }
   }
   useEffect(() => { void load() }, [])
+  useEffect(() => {
+    if (!events.some(event => event.status === 'processing')) return
+    const timer = window.setInterval(() => { void load() }, 2000)
+    return () => window.clearInterval(timer)
+  }, [events])
 
   async function upload(e: React.FormEvent) {
     e.preventDefault()
