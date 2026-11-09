@@ -113,6 +113,9 @@ export function createApp({ store, config, processor, limiter = new RateLimiter(
     const eventId = Number(url.searchParams.get('event'))
 
     // ---------- Puntos de venta ----------
+    if (method === 'GET' && path === '/api/pv/list') {
+      return send(res, 200, { pointsOfSale: await store.allPvNames() })
+    }
     if (method === 'POST' && path === '/api/login') {
       const wait = limiter.blocked(`pv:${ip}`)
       if (wait) throw tooMany(wait)
