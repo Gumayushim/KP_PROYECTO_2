@@ -44,10 +44,22 @@ export default function App() {
 function Login({ onLogin }: { onLogin: () => Promise<void> }) {
   const [mode, setMode] = useState<'pv' | 'admin'>('pv')
   const [pv, setPv] = useState('')
+  const [pvSearch, setPvSearch] = useState('')
+  const [pvNames, setPvNames] = useState<string[]>([])
+  const [pvListError, setPvListError] = useState('')
   const [user, setUser] = useState('admin')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (mode !== 'pv') return
+    api<{ pointsOfSale: string[] }>('/api/pv/list')
+      .then(r => { setPvNames(r.pointsOfSale); setPvListError('') })
+      .catch(e => setPvListError((e as Error).message))
+  }, [mode])
+
+  const filteredPvNames = pvNames.filter(name => name.toLocaleLowerCase('es-MX').includes(pvSearch.trim().toLocaleLowerCase('es-MX')))
 
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setError('')
@@ -73,7 +85,16 @@ function Login({ onLogin }: { onLogin: () => Promise<void> }) {
         <button className={mode === 'admin' ? 'tab active' : 'tab'} onClick={() => { setMode('admin'); setError('') }}><ShieldCheck size={16} /> Administrador</button>
       </div>
       <form onSubmit={submit} className="form-stack">
-        {mode === 'pv' ? <label>Nombre del punto de venta<input autoFocus value={pv} onChange={e => setPv(e.target.value)} placeholder="Ej. BARRA 5 STAGE 2" required /></label> : <>
+        {mode === 'pv' ? <div className="pv-login-picker">
+          <label>Buscar punto de venta<input autoFocus value={pvSearch} onChange={e => setPvSearch(e.target.value)} placeholder="Escribe para buscar un punto de venta…" /></label>
+          <div className="pv-list-heading"><span>Todos los puntos de venta</span><span>{filteredPvNames.length} de {pvNames.length}</span></div>
+          <div className="pv-options" role="listbox" aria-label="Puntos de venta disponibles">
+            {filteredPvNames.map(name => <button type="button" role="option" aria-selected={pv === name} key={name} className={pv === name ? 'pv-option selected' : 'pv-option'} onClick={() => setPv(name)}>{name}<span>{pv === name ? 'Seleccionado' : 'Elegir'}</span></button>)}
+            {!filteredPvNames.length && <div className="pv-empty">{pvListError || (pvNames.length ? 'No hay coincidencias.' : 'Todavía no hay puntos de venta disponibles.')}</div>}
+          </div>
+          <div className="pv-selected"><span>Punto de venta seleccionado</span><strong>{pv || 'Ninguno'}</strong></div>
+          {pvListError && <div className="alert">No se pudo cargar la lista: {pvListError}</div>}
+        </div> : <>
           <label>Usuario<input value={user} onChange={e => setUser(e.target.value)} autoComplete="username" required /></label>
           <label>Contraseña<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required /></label>
         </>}
