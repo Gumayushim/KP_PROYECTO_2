@@ -35,7 +35,7 @@ async function api(path: string, opts: { method?: string; body?: unknown; raw?: 
   const res = await fetch(base + path, {
     method: opts.method ?? 'GET',
     headers: { ...(opts.cookie ? { cookie: opts.cookie } : {}), ...(opts.body ? { 'content-type': 'application/json' } : {}) },
-    body: opts.raw ?? (opts.body ? JSON.stringify(opts.body) : undefined),
+    body: opts.raw ? new Uint8Array(opts.raw) : (opts.body ? JSON.stringify(opts.body) : undefined),
   })
   const setCookie = res.headers.getSetCookie().map((c) => c.split(';')[0]!).join('; ')
   const type = res.headers.get('content-type') ?? ''
