@@ -99,7 +99,7 @@ function Login({ onLogin }: { onLogin: () => Promise<void> }) {
           <label>Contraseña<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required /></label>
         </>}
         {error && <div className="alert">{error}</div>}
-        <button className="button primary full" disabled={busy}>{busy ? 'Validando…' : 'Ingresar'} <span>→</span></button>
+        <button className="button primary full" disabled={busy || (mode === 'pv' && !pv)}>{busy ? 'Validando…' : 'Ingresar'} <span>→</span></button>
       </form>
       <div className="login-foot"><LockKeyhole size={13} /> Acceso protegido mediante sesión segura</div>
     </section>
