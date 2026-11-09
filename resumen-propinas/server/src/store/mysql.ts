@@ -1,4 +1,4 @@
-import mysql, { type Pool, type RowDataPacket } from 'mysql2/promise'
+import mysql, { type Pool, type RowDataPacket, type ResultSetHeader } from 'mysql2/promise'
 import type { PvReport } from '../core/types.js'
 import type { EventInfo, EventTotals, ResultItem, Store } from './types.js'
 
@@ -60,7 +60,7 @@ export class MysqlStore implements Store {
   }
 
   async createEvent(name: string): Promise<number> {
-    const [result] = await this.pool.execute<mysql.ResultSetHeader>(
+    const [result] = await this.pool.execute<ResultSetHeader>(
       'INSERT INTO events (name, status) VALUES (?, ?)', [name, 'processing'],
     )
     return Number(result.insertId)
