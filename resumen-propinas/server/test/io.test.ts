@@ -33,7 +33,7 @@ test('leer el Excel real da lo mismo que Python y el Excel generado cuadra', { s
   const rep = reports.get('BARRA 5 STAGE 2 ALCOHOL')!
   const buf = await reportToXlsx(rep, 'Prueba')
   const wb = new ExcelJS.Workbook()
-  await wb.xlsx.load(buf)
+  await wb.xlsx.load(buf as unknown as Buffer)
   const ws = wb.getWorksheet('Venta por terminal ($)')!
   const last = ws.getRow(ws.rowCount)
   const n = rep.matriz.productos.length
