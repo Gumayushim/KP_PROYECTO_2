@@ -1,0 +1,20 @@
+{
+  "name": "resumen-propinas-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "process": "tsx src/cli/process.ts",
+    "dev": "tsx src/index.ts",
+    "hash-password": "tsx src/cli/hash-password.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}
